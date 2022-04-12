@@ -13,7 +13,7 @@ class RegisterViewModel(application: Application) : ViewModel() {
         mUserRepository.insert(user)
     }
 
-    fun isEmailListed(email: String): LiveData<Int> {
+    fun isEmailListed(email: String): LiveData<List<User>> {
         return mUserRepository.isEmailListed(email)
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.dicodingstoryapp1.database.User
 import com.example.dicodingstoryapp1.databinding.ActivityRegisterBinding
@@ -39,9 +40,9 @@ class RegisterActivity : AppCompatActivity() {
                 checked = false
             }
 
-            registerViewModel.isEmailListed(inputEmail).observe(this) {checkedEmail ->
-                if(checkedEmail > 0) {
-                    Log.d(TAG, "onCreate1: $checkedEmail")
+            registerViewModel.isEmailListed(inputEmail).observe(this) { checkedEmail ->
+                if(checkedEmail.isNotEmpty()) {
+                    Log.d(TAG, "onCreate: $checkedEmail")
                     activityRegisterBinding.etEmailRegister.error = getString(R.string.warning_email_registered)
                     checked = false
                 }

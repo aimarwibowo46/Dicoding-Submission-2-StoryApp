@@ -18,7 +18,7 @@ class UserRepository(application: Application) {
         mUserDao = db.UserDao()
     }
 
-    fun isEmailListed(email: String): LiveData<Int> {
+    fun isEmailListed(email: String): LiveData<List<User>> {
         Log.d("User Repository", "isEmailListed: ${mUserDao.isEmailListed(email)}")
         return mUserDao.isEmailListed(email)
     }

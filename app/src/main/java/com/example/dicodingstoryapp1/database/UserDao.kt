@@ -11,6 +11,6 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(user: User)
 
-    @Query("SELECT COUNT(id) FROM User WHERE email = :email")
-    fun isEmailListed(email: String): LiveData<Int>
+    @Query("SELECT * FROM User WHERE email = :email")
+    fun isEmailListed(email: String): LiveData<List<User>>
 }
