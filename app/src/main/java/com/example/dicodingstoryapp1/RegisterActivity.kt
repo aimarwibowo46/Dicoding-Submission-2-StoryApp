@@ -47,12 +47,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
 
-//            Log.d(TAG, "onCreate2: ${registerViewModel.isEmailListed(inputEmail)}")
-//            if(registerViewModel.isEmailListed(inputEmail) > 0) {
-//                activityRegisterBinding.etEmailRegister.error = getString(R.string.warning_email_registered)
-//                checked = false
-//            }
-
             if(checked) {
                 registerViewModel.insert(
                     User(

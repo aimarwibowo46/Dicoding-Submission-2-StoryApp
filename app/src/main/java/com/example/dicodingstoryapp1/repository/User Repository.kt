@@ -1,6 +1,7 @@
 package com.example.dicodingstoryapp1.repository
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.dicodingstoryapp1.database.User
 import com.example.dicodingstoryapp1.database.UserDao
@@ -18,6 +19,7 @@ class UserRepository(application: Application) {
     }
 
     fun isEmailListed(email: String): LiveData<Int> {
+        Log.d("User Repository", "isEmailListed: ${mUserDao.isEmailListed(email)}")
         return mUserDao.isEmailListed(email)
     }
 
