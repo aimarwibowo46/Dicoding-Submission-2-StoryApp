@@ -7,8 +7,10 @@
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="name">Name</string>
-    <string name="warning_name_field">Please Fill Name</string>
-    <string name="warning_email_field">Please Fill Email</string>
-    <string name="warning_password_field">Please Fill Password</string>
-    <string name="warning_email_registered">This Email Is Already Registered</string>
+    <string name="description">This is a description</string>
+    <string name="add_story_menu">Add Story Menu</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="upload">Upload</string>
+    <string name="logout">Logout</string>
 </resources>

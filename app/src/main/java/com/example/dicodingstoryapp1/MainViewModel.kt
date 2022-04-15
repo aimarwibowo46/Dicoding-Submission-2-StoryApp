@@ -1,15 +1,19 @@
 package com.example.dicodingstoryapp1
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.dicodingstoryapp1.database.User
-import com.example.dicodingstoryapp1.repository.UserRepository
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : ViewModel() {
-    private val mUserRepository: UserRepository = UserRepository(application)
+class MainViewModel(private val pref: UserPreference) : ViewModel() {
+    fun getUser() : LiveData<UserAuth> {
+        return pref.getUser().asLiveData()
+    }
 
-    fun isEmailListed(email: String): LiveData<List<User>> {
-        return mUserRepository.isEmailListed(email)
+    fun login() {
+        viewModelScope.launch {
+            pref.login()
+        }
     }
 }

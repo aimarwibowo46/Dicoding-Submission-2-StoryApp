@@ -4,22 +4,20 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import com.example.dicodingstoryapp1.database.User
 import com.example.dicodingstoryapp1.databinding.ActivityRegisterBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var activityRegisterBinding: ActivityRegisterBinding
-    private lateinit var registerViewModel: RegisterViewModel
+    private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityRegisterBinding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(activityRegisterBinding.root)
-
-        registerViewModel = obtainViewModel(this)
 
         activityRegisterBinding.btnRegister.setOnClickListener {
             val inputName = activityRegisterBinding.etNameRegister.text.toString()
@@ -27,48 +25,37 @@ class RegisterActivity : AppCompatActivity() {
             val inputPassword = activityRegisterBinding.etPasswordRegister.text.toString()
 
             var checked = true
-            if(inputName.isEmpty()) {
-                activityRegisterBinding.etNameRegister.error = getString(R.string.warning_name_field)
-                checked = false
-            }
-            if(inputEmail.isEmpty()) {
-                activityRegisterBinding.etEmailRegister.error = getString(R.string.warning_email_field)
-                checked = false
-            }
-            if(inputPassword.isEmpty()) {
-                activityRegisterBinding.etPasswordRegister.error = getString(R.string.warning_password_field)
-                checked = false
-            }
 
-            registerViewModel.isEmailListed(inputEmail).observe(this) { checkedEmail ->
-                if(checkedEmail.isNotEmpty()) {
-                    Log.d(TAG, "onCreate: $checkedEmail")
-                    activityRegisterBinding.etEmailRegister.error = getString(R.string.warning_email_registered)
-                    checked = false
-                }
-            }
-
-            if(checked) {
-                registerViewModel.insert(
-                    User(
-                        name = inputName,
-                        email = inputEmail,
-                        password = inputPassword
-                    )
-                )
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
-            }
-
+            if(checked) createAccount(inputName, inputEmail, inputPassword)
         }
     }
 
-    private fun obtainViewModel(activity: AppCompatActivity): RegisterViewModel {
-        val factory = ViewModelFactory.getInstance(activity.application)
-        return ViewModelProvider(activity, factory)[RegisterViewModel::class.java]
+    private fun createAccount(inputName: String, inputEmail: String, inputPassword: String) {
+        val client = ApiConfig.getApiService().createAccount(inputName, inputEmail, inputPassword)
+        client.enqueue(object: Callback<RegisterResponse>{
+            override fun onResponse(
+                call: Call<RegisterResponse>,
+                response: Response<RegisterResponse>
+            ) {
+                val responseBody = response.body()
+                if(response.isSuccessful && responseBody != null) {
+                    Log.d(TAG, "onResponse: $responseBody")
+                    val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    Log.e(TAG, "onFailure: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+                Log.e(TAG, "onFailure: ${t.message}")
+            }
+
+        })
     }
 
     companion object {
-        private const val TAG = "RegisterActivity"
+        private const val TAG = "Register Activity"
     }
+
 }
