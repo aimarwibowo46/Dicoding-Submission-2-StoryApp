@@ -10,6 +10,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -80,11 +81,7 @@ class AddStoryActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (!allPermissionsGranted()) {
-                Toast.makeText(
-                    this,
-                    "Tidak mendapatkan permission.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
                 finish()
             }
         }
@@ -108,6 +105,8 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private fun uploadImage() {
+        showLoading(true)
+
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
 
@@ -127,16 +126,21 @@ class AddStoryActivity : AppCompatActivity() {
                             call: Call<FileUploadResponse>,
                             response: Response<FileUploadResponse>
                         ) {
+                            showLoading(false)
                             val responseBody = response.body()
-                            if(response.isSuccessful && responseBody != null) {
-                                Log.d(TAG, "onResponse: $responseBody")
+                            Log.d(TAG, "onResponse: $responseBody")
+                            if(response.isSuccessful && responseBody?.message == "Story created successfully") {
+                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
                             } else {
-                                Log.e(TAG, "onResponse: ${response.message()}")
+                                Log.e(TAG, "onFailure1: ${response.message()}")
+                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
                             }
                         }
 
                         override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                            Log.e(TAG, "onFailure: ${t.message}" )
+                            showLoading(false)
+                            Log.e(TAG, "onFailure2: ${t.message}" )
+                            Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
                         }
                     })
                 }
@@ -171,7 +175,14 @@ class AddStoryActivity : AppCompatActivity() {
             val myFile = uriToFile(selectedImg, this@AddStoryActivity)
             getFile = myFile
             activityAddStoryBinding.imgPreview.setImageURI(selectedImg)
+        }
+    }
 
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            activityAddStoryBinding.progressBar.visibility = View.VISIBLE
+        } else {
+            activityAddStoryBinding.progressBar.visibility = View.GONE
         }
     }
 

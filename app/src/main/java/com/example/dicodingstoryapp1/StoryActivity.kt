@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -69,6 +71,8 @@ class StoryActivity : AppCompatActivity() {
     }
 
     private fun getStories() {
+        showLoading(true)
+
         storyViewModel.getUser().observe(this ) {
             if(it != null) {
                 val client = ApiConfig.getApiService().getStories("Bearer " + it.token)
@@ -77,23 +81,27 @@ class StoryActivity : AppCompatActivity() {
                         call: Call<StoriesResponse>,
                         response: Response<StoriesResponse>
                     ) {
+                        showLoading(false)
                         val responseBody = response.body()
-                        if(response.isSuccessful && responseBody != null) {
-                            Log.d(TAG, "onResponse: $responseBody")
+                        Log.d(TAG, "onResponse: $responseBody")
+                        if(response.isSuccessful && responseBody?.message == "Stories fetched successfully") {
                             setStoriesData(responseBody.listStory)
+                            Toast.makeText(this@StoryActivity, "Stories success to load", Toast.LENGTH_SHORT).show()
                         } else {
-                            Log.e(TAG, "onFailure: ${response.message()}")
+                            Log.e(TAG, "onFailure1: ${response.message()}")
+                            Toast.makeText(this@StoryActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()
                         }
                     }
 
                     override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                        Log.e(TAG, "onFailure: ${t.message}")
+                        showLoading(false)
+                        Log.e(TAG, "onFailure2: ${t.message}")
+                        Toast.makeText(this@StoryActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()
                     }
 
                 })
             }
         }
-
 
     }
 
@@ -110,6 +118,14 @@ class StoryActivity : AppCompatActivity() {
 
         val adapter = StoryAdapter(listStories)
         activityStoryBinding.rvStories.adapter = adapter
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            activityStoryBinding.progressBar.visibility = View.VISIBLE
+        } else {
+            activityStoryBinding.progressBar.visibility = View.GONE
+        }
     }
 
     companion object {
