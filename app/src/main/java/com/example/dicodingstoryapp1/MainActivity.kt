@@ -5,11 +5,13 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import com.example.dicodingstoryapp1.databinding.ActivityMainBinding
+import com.example.dicodingstoryapp1.views.RegisterActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,18 +63,21 @@ class MainActivity : AppCompatActivity() {
         client.enqueue(object: Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 val responseBody = response.body()
-                if(response.isSuccessful && responseBody != null) {
-                    Log.d(TAG, "onResponse: $responseBody")
+                Log.d(TAG, "onResponse: $responseBody")
+                if(response.isSuccessful && responseBody?.message == "success") {
                     mainViewModel.saveUser(UserAuth(responseBody.loginResult.token, true))
+                    Toast.makeText(this@MainActivity, getString(R.string.login_success), Toast.LENGTH_LONG).show()
                     val intent = Intent(this@MainActivity, StoryActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
+                    Log.e(TAG, "onFailure1: ${response.message()}")
+                    Toast.makeText(this@MainActivity, getString(R.string.login_fail), Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                Log.e(TAG, "onFailure: ${t.message}")
+                Log.e(TAG, "onFailure2: ${t.message}")
+                Toast.makeText(this@MainActivity, getString(R.string.login_fail), Toast.LENGTH_LONG).show()
             }
 
         })

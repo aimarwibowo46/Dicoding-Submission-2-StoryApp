@@ -27,7 +27,7 @@
             android:name=".StoryActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".views.RegisterActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

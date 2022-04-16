@@ -28,7 +28,6 @@ interface ApiService {
 
     @Multipart
     @POST("stories")
-    //@Headers("Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXFnSUFGNC15dUZZZVNVelkiLCJpYXQiOjE2NTAwNzc1ODV9.ho6Y8cBCp55Y6vr-HHoZ9r4e0DAnmjdql4goR7qd5AM")
     fun uploadImage(
         @Header("Authorization") header: String,
         @Part file: MultipartBody.Part,

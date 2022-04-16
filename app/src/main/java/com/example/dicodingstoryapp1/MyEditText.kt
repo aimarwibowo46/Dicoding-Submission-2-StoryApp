@@ -32,11 +32,15 @@ class MyEditText : AppCompatEditText {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if(type == "password") {
                     if(s.length < 6) {
-                        error = context.getString(R.string.password_error)
+                        error = context.getString(R.string.password_warning)
                     }
-                } else {
+                } else if(type == "email") {
                     if(!EMAIL_ADDRESS.matcher(s).matches()) {
                         error = context.getString(R.string.email_warning)
+                    }
+                } else {
+                    if(s.isEmpty()) {
+                        error = context.getString(R.string.name_warning)
                     }
                 }
 
