@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dicodingstoryapp1.model.UserAuth
 import kotlinx.coroutines.launch
 
 class SharedViewModel(private val pref: UserPreference) : ViewModel() {

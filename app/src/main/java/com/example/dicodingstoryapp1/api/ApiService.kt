@@ -1,4 +1,4 @@
-package com.example.dicodingstoryapp1
+package com.example.dicodingstoryapp1.api
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody

@@ -9,6 +9,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import com.example.dicodingstoryapp1.api.ApiConfig
+import com.example.dicodingstoryapp1.api.RegisterResponse
 import com.example.dicodingstoryapp1.databinding.ActivityRegisterBinding
 import retrofit2.Call
 import retrofit2.Callback

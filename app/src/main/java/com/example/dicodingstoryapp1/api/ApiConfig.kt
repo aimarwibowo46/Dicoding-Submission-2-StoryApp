@@ -1,4 +1,4 @@
-package com.example.dicodingstoryapp1
+package com.example.dicodingstoryapp1.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

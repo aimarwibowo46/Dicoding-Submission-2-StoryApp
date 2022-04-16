@@ -14,7 +14,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
+import com.example.dicodingstoryapp1.api.ApiConfig
+import com.example.dicodingstoryapp1.api.LoginResponse
 import com.example.dicodingstoryapp1.databinding.ActivityMainBinding
+import com.example.dicodingstoryapp1.model.UserAuth
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

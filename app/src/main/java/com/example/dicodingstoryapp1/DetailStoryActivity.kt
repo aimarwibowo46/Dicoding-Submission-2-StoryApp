@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.Glide
 import com.example.dicodingstoryapp1.databinding.ActivityDetailStoryBinding
+import com.example.dicodingstoryapp1.model.Story
 
 class DetailStoryActivity : AppCompatActivity() {
 
