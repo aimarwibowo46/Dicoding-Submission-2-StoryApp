@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -54,13 +55,19 @@ class StoryActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu1 -> {
+            R.id.menu_add -> {
                 val intent = Intent(this, AddStoryActivity::class.java)
                 startActivity(intent)
                 return true
             }
 
-            R.id.menu2 -> {
+            R.id.menu_language -> {
+                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                startActivity(intent)
+                return true
+            }
+
+            R.id.menu_logout -> {
                 storyViewModel.logout()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
@@ -86,7 +93,7 @@ class StoryActivity : AppCompatActivity() {
                         Log.d(TAG, "onResponse: $responseBody")
                         if(response.isSuccessful && responseBody?.message == "Stories fetched successfully") {
                             setStoriesData(responseBody.listStory)
-                            Toast.makeText(this@StoryActivity, "Stories success to load", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@StoryActivity, getString(R.string.success_load_stories), Toast.LENGTH_SHORT).show()
                         } else {
                             Log.e(TAG, "onFailure1: ${response.message()}")
                             Toast.makeText(this@StoryActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()

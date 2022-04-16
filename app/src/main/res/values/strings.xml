@@ -21,7 +21,9 @@
     <string name="login_success">Login Success</string>
     <string name="login_fail">Login Fail</string>
     <string name="fail_load_stories">Stories failed to load</string>
+    <string name="success_load_stories">Stories success to load</string>
     <string name="permission_denied">Permission Denied</string>
     <string name="upload_success">Upload Success</string>
     <string name="upload_fail">Upload fail</string>
+    <string name="language_setting">Language Setting</string>
 </resources>

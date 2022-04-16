@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Aplikasi Story</string>
+    <string name="story_app">Aplikasi Story</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="account_question">Tidak mempunyai akun ?</string>
+    <string name="register">Daftar</string>
+    <string name="login">Masuk</string>
+    <string name="name">Nama</string>
+    <string name="description">Ini adalah deskripsi</string>
+    <string name="add_story_menu">Menu Tambah Story</string>
+    <string name="camera">Kamera</string>
+    <string name="gallery">Galeri</string>
+    <string name="upload">Unggah</string>
+    <string name="logout">Keluar</string>
+    <string name="email_warning">Format email salah</string>
+    <string name="password_warning">Password harus terdiri minimal 6 karakter</string>
+    <string name="name_warning">Nama tidak boleh kosong</string>
+    <string name="register_success">Berhasil daftar akun</string>
+    <string name="register_fail">Gagal daftar akun</string>
+    <string name="login_success">Berhasil masuk akun</string>
+    <string name="login_fail">Gagal masuk akun</string>
+    <string name="fail_load_stories">Daftar story gagal dimuat</string>
+    <string name="success_load_stories">Daftar story berhasil dimuat</string>
+    <string name="permission_denied">Izin ditolak</string>
+    <string name="upload_success">Berhasil mengunggah gambar</string>
+    <string name="upload_fail">Gagal mengunggah gambar</string>
+    <string name="language_setting">Atur Bahasa</string>
+</resources>

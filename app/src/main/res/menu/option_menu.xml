@@ -3,13 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <group android:menuCategory="container">
         <item
-            android:id="@+id/menu1"
+            android:id="@+id/menu_add"
             android:title="@string/add_story_menu"
             android:icon="@drawable/ic_add"
             app:showAsAction="collapseActionView|always"/>
 
         <item
-            android:id="@+id/menu2"
+            android:id="@+id/menu_language"
+            android:title="@string/language_setting"/>
+
+        <item
+            android:id="@+id/menu_logout"
             android:title="@string/logout"/>
     </group>
 </menu>
