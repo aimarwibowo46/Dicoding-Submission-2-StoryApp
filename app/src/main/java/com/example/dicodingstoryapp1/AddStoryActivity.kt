@@ -29,11 +29,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.*
 
-//private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class AddStoryActivity : AppCompatActivity() {
 
-//    private lateinit var addStoryViewModel: AddStoryViewModel
+    private lateinit var addStoryViewModel: AddStoryViewModel
     private lateinit var activityAddStoryBinding: ActivityAddStoryBinding
     private var getFile: File? = null
 
@@ -42,7 +42,7 @@ class AddStoryActivity : AppCompatActivity() {
         activityAddStoryBinding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(activityAddStoryBinding.root)
 
-//        setupViewModel()
+        setupViewModel()
 
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
@@ -65,12 +65,12 @@ class AddStoryActivity : AppCompatActivity() {
         }
     }
 
-//    private fun setupViewModel() {
-//        addStoryViewModel = ViewModelProvider(
-//            this,
-//            ViewModelFactory(UserPreference.getInstance(dataStore))
-//        )[AddStoryViewModel::class.java]
-//    }
+    private fun setupViewModel() {
+        addStoryViewModel = ViewModelProvider(
+            this,
+            ViewModelFactory(UserPreference.getInstance(dataStore))
+        )[AddStoryViewModel::class.java]
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -110,7 +110,6 @@ class AddStoryActivity : AppCompatActivity() {
     private fun uploadImage() {
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
-            Log.d(TAG, "uploadImage1: $file")
 
             val description = activityAddStoryBinding.etDescription.text.toString().toRequestBody("text/plain".toMediaType())
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
@@ -119,30 +118,30 @@ class AddStoryActivity : AppCompatActivity() {
                 file.name,
                 requestImageFile
             )
-            Log.d(TAG, "uploadImage2: $description")
-            Log.d(TAG, "uploadImage3: $requestImageFile")
-            Log.d(TAG, "uploadImage4: $imageMultipart")
 
-            val client = ApiConfig.getApiService().uploadImage(imageMultipart, description)
+            addStoryViewModel.getUser().observe(this) {
+                if(it != null) {
+                    val client = ApiConfig.getApiService().uploadImage("Bearer " + it.token, imageMultipart, description)
+                    client.enqueue(object: Callback<FileUploadResponse> {
+                        override fun onResponse(
+                            call: Call<FileUploadResponse>,
+                            response: Response<FileUploadResponse>
+                        ) {
+                            val responseBody = response.body()
+                            if(response.isSuccessful && responseBody != null) {
+                                Log.d(TAG, "onResponse: $responseBody")
+                            } else {
+                                Log.e(TAG, "onResponse: ${response.message()}")
+                            }
+                        }
 
-            client.enqueue(object: Callback<FileUploadResponse> {
-                override fun onResponse(
-                    call: Call<FileUploadResponse>,
-                    response: Response<FileUploadResponse>
-                ) {
-                    val responseBody = response.body()
-                    if(response.isSuccessful && responseBody != null) {
-                        Log.d(TAG, "onResponse: $responseBody")
-                    } else {
-                        Log.e(TAG, "onResponse: ${response.message()}")
-                    }
+                        override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
+                            Log.e(TAG, "onFailure: ${t.message}" )
+                        }
+                    })
                 }
+            }
 
-                override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                    Log.e(TAG, "onFailure: ${t.message}" )
-                }
-
-            })
         }
 
     }
