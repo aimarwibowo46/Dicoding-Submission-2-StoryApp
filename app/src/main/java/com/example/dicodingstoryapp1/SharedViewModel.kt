@@ -6,7 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val pref: UserPreference) : ViewModel() {
+class SharedViewModel(private val pref: UserPreference) : ViewModel() {
     fun getUser() : LiveData<UserAuth> {
         return pref.getUser().asLiveData()
     }
@@ -17,4 +17,9 @@ class MainViewModel(private val pref: UserPreference) : ViewModel() {
         }
     }
 
+    fun logout() {
+        viewModelScope.launch {
+            pref.logout()
+        }
+    }
 }
