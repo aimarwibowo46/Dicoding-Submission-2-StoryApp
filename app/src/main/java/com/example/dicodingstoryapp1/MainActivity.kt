@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.datastore.core.DataStore
@@ -20,7 +23,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var mainViewModel: SharedViewModel
     private lateinit var activityMainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(
             this,
             ViewModelFactory(UserPreference.getInstance(dataStore))
-        )[MainViewModel::class.java]
+        )[SharedViewModel::class.java]
 
         mainViewModel.getUser().observe(this) { user ->
             if(user.isLogin) {
@@ -56,6 +59,30 @@ class MainActivity : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.option_menu, menu)
+
+        val addMenu = menu.findItem(R.id.menu_add)
+        val logoutMenu = menu.findItem(R.id.menu_logout)
+
+        addMenu.isVisible = false
+        logoutMenu.isVisible = false
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.menu_language -> {
+                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                startActivity(intent)
+                return true
+            }
+        }
+        return true
     }
 
     private fun login(inputEmail: String, inputPassword: String) {

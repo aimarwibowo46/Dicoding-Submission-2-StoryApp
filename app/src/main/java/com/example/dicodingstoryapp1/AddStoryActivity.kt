@@ -9,7 +9,10 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,7 +37,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class AddStoryActivity : AppCompatActivity() {
 
-    private lateinit var addStoryViewModel: AddStoryViewModel
+    private lateinit var addStoryViewModel: SharedViewModel
     private lateinit var activityAddStoryBinding: ActivityAddStoryBinding
     private var getFile: File? = null
 
@@ -70,7 +73,35 @@ class AddStoryActivity : AppCompatActivity() {
         addStoryViewModel = ViewModelProvider(
             this,
             ViewModelFactory(UserPreference.getInstance(dataStore))
-        )[AddStoryViewModel::class.java]
+        )[SharedViewModel::class.java]
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.option_menu, menu)
+
+        val addMenu = menu.findItem(R.id.menu_add)
+        addMenu.isVisible = false
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.menu_language -> {
+                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                startActivity(intent)
+                return true
+            }
+
+            R.id.menu_logout -> {
+                addStoryViewModel.logout()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+        }
+        return true
     }
 
     override fun onRequestPermissionsResult(

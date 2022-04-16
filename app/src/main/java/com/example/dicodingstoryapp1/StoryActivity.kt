@@ -24,7 +24,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class StoryActivity : AppCompatActivity() {
 
-    private lateinit var storyViewModel: StoryViewModel
+    private lateinit var storyViewModel: SharedViewModel
     private lateinit var activityStoryBinding: ActivityStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +44,7 @@ class StoryActivity : AppCompatActivity() {
         storyViewModel = ViewModelProvider(
             this,
             ViewModelFactory(UserPreference.getInstance(dataStore))
-        )[StoryViewModel::class.java]
+        )[SharedViewModel::class.java]
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -8,14 +8,8 @@ class ViewModelFactory(private val pref: UserPreference) : ViewModelProvider.New
     @Suppress("UNCHECKED_CAST")
     override fun <T: ViewModel> create(modelClass: Class<T>) : T {
         return when {
-            modelClass.isAssignableFrom(MainViewModel::class.java) -> {
-                MainViewModel(pref) as T
-            }
-            modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
-                StoryViewModel(pref) as T
-            }
-            modelClass.isAssignableFrom(AddStoryViewModel::class.java) -> {
-                AddStoryViewModel(pref) as T
+            modelClass.isAssignableFrom(SharedViewModel::class.java) -> {
+                SharedViewModel(pref) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
