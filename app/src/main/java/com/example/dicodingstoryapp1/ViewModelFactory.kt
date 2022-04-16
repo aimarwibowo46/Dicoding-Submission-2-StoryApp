@@ -14,6 +14,9 @@ class ViewModelFactory(private val pref: UserPreference) : ViewModelProvider.New
             modelClass.isAssignableFrom(StoryViewModel::class.java) -> {
                 StoryViewModel(pref) as T
             }
+            modelClass.isAssignableFrom(AddStoryViewModel::class.java) -> {
+                AddStoryViewModel(pref) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
         }
     }

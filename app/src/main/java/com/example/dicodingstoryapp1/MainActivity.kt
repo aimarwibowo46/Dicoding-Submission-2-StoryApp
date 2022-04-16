@@ -63,9 +63,8 @@ class MainActivity : AppCompatActivity() {
                 val responseBody = response.body()
                 if(response.isSuccessful && responseBody != null) {
                     Log.d(TAG, "onResponse: $responseBody")
-                    mainViewModel.login()
+                    mainViewModel.saveUser(UserAuth(responseBody.loginResult.token, true))
                     val intent = Intent(this@MainActivity, StoryActivity::class.java)
-                    intent.putExtra(StoryActivity.TOKEN, responseBody.loginResult.token)
                     startActivity(intent)
                 } else {
                     Log.e(TAG, "onFailure: ${response.message()}")

@@ -13,4 +13,6 @@
     <string name="gallery">Gallery</string>
     <string name="upload">Upload</string>
     <string name="logout">Logout</string>
+    <string name="password_error">Password mush have at least 6 characters</string>
+    <string name="email_warning">Wrong email format</string>
 </resources>

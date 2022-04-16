@@ -1,6 +1,7 @@
 package com.example.dicodingstoryapp1
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
@@ -8,10 +9,15 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.ViewModelProvider
 import com.example.dicodingstoryapp1.databinding.ActivityAddStoryBinding
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,8 +29,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.*
 
+//private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
 class AddStoryActivity : AppCompatActivity() {
 
+//    private lateinit var addStoryViewModel: AddStoryViewModel
     private lateinit var activityAddStoryBinding: ActivityAddStoryBinding
     private var getFile: File? = null
 
@@ -32,6 +41,8 @@ class AddStoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         activityAddStoryBinding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(activityAddStoryBinding.root)
+
+//        setupViewModel()
 
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
@@ -53,6 +64,13 @@ class AddStoryActivity : AppCompatActivity() {
             uploadImage()
         }
     }
+
+//    private fun setupViewModel() {
+//        addStoryViewModel = ViewModelProvider(
+//            this,
+//            ViewModelFactory(UserPreference.getInstance(dataStore))
+//        )[AddStoryViewModel::class.java]
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -92,6 +110,7 @@ class AddStoryActivity : AppCompatActivity() {
     private fun uploadImage() {
         if (getFile != null) {
             val file = reduceFileImage(getFile as File)
+            Log.d(TAG, "uploadImage1: $file")
 
             val description = activityAddStoryBinding.etDescription.text.toString().toRequestBody("text/plain".toMediaType())
             val requestImageFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
@@ -100,29 +119,32 @@ class AddStoryActivity : AppCompatActivity() {
                 file.name,
                 requestImageFile
             )
+            Log.d(TAG, "uploadImage2: $description")
+            Log.d(TAG, "uploadImage3: $requestImageFile")
+            Log.d(TAG, "uploadImage4: $imageMultipart")
 
-            val service = ApiConfig.getApiService().uploadImage(imageMultipart, description)
-            service.enqueue(object : Callback<FileUploadResponse> {
+            val client = ApiConfig.getApiService().uploadImage(imageMultipart, description)
+
+            client.enqueue(object: Callback<FileUploadResponse> {
                 override fun onResponse(
                     call: Call<FileUploadResponse>,
                     response: Response<FileUploadResponse>
                 ) {
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        if (responseBody != null && !responseBody.error) {
-                            Toast.makeText(this@AddStoryActivity, responseBody.message, Toast.LENGTH_SHORT).show()
-                        }
+                    val responseBody = response.body()
+                    if(response.isSuccessful && responseBody != null) {
+                        Log.d(TAG, "onResponse: $responseBody")
                     } else {
-                        Toast.makeText(this@AddStoryActivity, response.message(), Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, "onResponse: ${response.message()}")
                     }
                 }
+
                 override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                    Toast.makeText(this@AddStoryActivity, "Gagal instance Retrofit", Toast.LENGTH_SHORT).show()
+                    Log.e(TAG, "onFailure: ${t.message}" )
                 }
+
             })
-        } else {
-            Toast.makeText(this@AddStoryActivity, "Silakan masukkan berkas gambar terlebih dahulu.", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     private val launcherIntentCameraX = registerForActivityResult(
@@ -155,6 +177,7 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val TAG = "AddStoryActivity"
         const val CAMERA_X_RESULT = 200
 
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)

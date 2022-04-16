@@ -12,12 +12,14 @@ import retrofit2.Response
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var activityRegisterBinding: ActivityRegisterBinding
-    private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityRegisterBinding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(activityRegisterBinding.root)
+
+        activityRegisterBinding.etEmailRegister.type = "email"
+        activityRegisterBinding.etPasswordRegister.type = "password"
 
         activityRegisterBinding.btnRegister.setOnClickListener {
             val inputName = activityRegisterBinding.etNameRegister.text.toString()

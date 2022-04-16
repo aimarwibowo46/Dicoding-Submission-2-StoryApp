@@ -34,9 +34,6 @@ class StoryActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         activityStoryBinding.rvStories.layoutManager = layoutManager
 
-        val token = intent.getStringExtra(TOKEN)
-        Log.d(TAG, "onCreate: $token")
-
         getStories()
     }
 
@@ -72,26 +69,32 @@ class StoryActivity : AppCompatActivity() {
     }
 
     private fun getStories() {
-        val client = ApiConfig.getApiService().getStories()
-        client.enqueue(object: Callback<StoriesResponse> {
-            override fun onResponse(
-                call: Call<StoriesResponse>,
-                response: Response<StoriesResponse>
-            ) {
-                val responseBody = response.body()
-                if(response.isSuccessful && responseBody != null) {
-                    Log.d(TAG, "onResponse: $responseBody")
-                    setStoriesData(responseBody.listStory)
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                }
-            }
+        storyViewModel.getUser().observe(this ) {
+            if(it != null) {
+                val client = ApiConfig.getApiService().getStories("Bearer " + it.token)
+                client.enqueue(object: Callback<StoriesResponse> {
+                    override fun onResponse(
+                        call: Call<StoriesResponse>,
+                        response: Response<StoriesResponse>
+                    ) {
+                        val responseBody = response.body()
+                        if(response.isSuccessful && responseBody != null) {
+                            Log.d(TAG, "onResponse: $responseBody")
+                            setStoriesData(responseBody.listStory)
+                        } else {
+                            Log.e(TAG, "onFailure: ${response.message()}")
+                        }
+                    }
 
-            override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                Log.e(TAG, "onFailure: ${t.message}")
-            }
+                    override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
+                        Log.e(TAG, "onFailure: ${t.message}")
+                    }
 
-        })
+                })
+            }
+        }
+
+
     }
 
     private fun setStoriesData(items: List<ListStoryItem>) {
@@ -111,6 +114,5 @@ class StoryActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "Story Activity"
-        const val TOKEN = "token"
     }
 }

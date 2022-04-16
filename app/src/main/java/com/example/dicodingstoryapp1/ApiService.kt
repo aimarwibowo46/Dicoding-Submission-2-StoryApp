@@ -22,13 +22,14 @@ interface ApiService {
     ) : Call<LoginResponse>
 
     @GET("stories")
-    @Headers("Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXFnSUFGNC15dUZZZVNVelkiLCJpYXQiOjE2NDk4MzYyMzV9.0OYl1CMCn62wdiIhEY6GNZvopL5mT3d6CewDwoKa0C8")
-    fun getStories() : Call<StoriesResponse>
+    fun getStories(
+        @Header("Authorization") header: String
+    ) : Call<StoriesResponse>
 
     @Multipart
-    @Headers("Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXFnSUFGNC15dUZZZVNVelkiLCJpYXQiOjE2NDk4MzYyMzV9.0OYl1CMCn62wdiIhEY6GNZvopL5mT3d6CewDwoKa0C8")
-    @POST("stories")
+    @Headers("Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXFnSUFGNC15dUZZZVNVelkiLCJpYXQiOjE2NTAwNzc1ODV9.ho6Y8cBCp55Y6vr-HHoZ9r4e0DAnmjdql4goR7qd5AM")
     fun uploadImage(
+        //@Header("Authorization") header: String,
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
     ): Call<FileUploadResponse>

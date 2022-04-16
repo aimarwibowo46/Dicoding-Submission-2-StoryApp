@@ -11,9 +11,10 @@ class MainViewModel(private val pref: UserPreference) : ViewModel() {
         return pref.getUser().asLiveData()
     }
 
-    fun login() {
+    fun saveUser(user: UserAuth) {
         viewModelScope.launch {
-            pref.login()
+            pref.saveUser(user)
         }
     }
+
 }
