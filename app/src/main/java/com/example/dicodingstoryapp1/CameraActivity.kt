@@ -30,7 +30,7 @@ class CameraActivity : AppCompatActivity() {
         activityCameraBinding.captureImage.setOnClickListener { takePhoto() }
 
         activityCameraBinding.switchCamera.setOnClickListener {
-            cameraSelector = if (cameraSelector.equals(CameraSelector.DEFAULT_BACK_CAMERA)) CameraSelector.DEFAULT_FRONT_CAMERA
+            cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
             else CameraSelector.DEFAULT_BACK_CAMERA
 
             startCamera()
@@ -54,7 +54,7 @@ class CameraActivity : AppCompatActivity() {
                 override fun onError(exc: ImageCaptureException) {
                     Toast.makeText(
                         this@CameraActivity,
-                        "Gagal mengambil gambar.",
+                        getString(R.string.fail_take_picture),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -97,7 +97,7 @@ class CameraActivity : AppCompatActivity() {
             } catch (exc: Exception) {
                 Toast.makeText(
                     this@CameraActivity,
-                    "Gagal memunculkan kamera.",
+                    getString(R.string.fail_show_camera),
                     Toast.LENGTH_SHORT
                 ).show()
             }

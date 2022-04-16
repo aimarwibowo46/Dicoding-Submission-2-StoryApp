@@ -26,4 +26,6 @@
     <string name="upload_success">Berhasil mengunggah gambar</string>
     <string name="upload_fail">Gagal mengunggah gambar</string>
     <string name="language_setting">Atur Bahasa</string>
+    <string name="fail_take_picture">Gagal mengambil gambar</string>
+    <string name="fail_show_camera">Gagal memunculkan kamera</string>
 </resources>

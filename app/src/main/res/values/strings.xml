@@ -25,5 +25,7 @@
     <string name="permission_denied">Permission denied</string>
     <string name="upload_success">Upload success</string>
     <string name="upload_fail">Upload fail</string>
-    <string name="language_setting">Language Setting</string>
+    <string name="language_setting">Change Language</string>
+    <string name="fail_take_picture">Fail to take picture</string>
+    <string name="fail_show_camera">Fail to show camera</string>
 </resources>

@@ -164,6 +164,8 @@ class AddStoryActivity : AppCompatActivity() {
                             Log.d(TAG, "onResponse: $responseBody")
                             if(response.isSuccessful && responseBody?.message == "Story created successfully") {
                                 Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
+                                startActivity(intent)
                             } else {
                                 Log.e(TAG, "onFailure1: ${response.message()}")
                                 Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
