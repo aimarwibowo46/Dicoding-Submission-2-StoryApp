@@ -132,11 +132,7 @@ class StoryActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            activityStoryBinding.progressBar.visibility = View.VISIBLE
-        } else {
-            activityStoryBinding.progressBar.visibility = View.GONE
-        }
+        activityStoryBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {

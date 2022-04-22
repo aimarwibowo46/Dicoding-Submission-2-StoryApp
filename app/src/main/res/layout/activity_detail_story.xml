@@ -9,6 +9,7 @@
 
     <ImageView
         android:id="@+id/img_photo_detail"
+        android:contentDescription="@string/detail_photo"
         android:transitionName="img_photo_detail_transition"
         android:layout_width="300dp"
         android:layout_height="150dp"

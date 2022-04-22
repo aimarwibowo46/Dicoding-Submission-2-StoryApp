@@ -94,11 +94,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            activityRegisterBinding.progressBar.visibility = View.VISIBLE
-        } else {
-            activityRegisterBinding.progressBar.visibility = View.GONE
-        }
+        activityRegisterBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {

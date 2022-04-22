@@ -93,14 +93,12 @@ class AddStoryActivity : AppCompatActivity() {
             R.id.menu_language -> {
                 val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
                 startActivity(intent)
-                return true
             }
 
             R.id.menu_logout -> {
                 addStoryViewModel.logout()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
-                return true
             }
         }
         return true
@@ -214,11 +212,7 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            activityAddStoryBinding.progressBar.visibility = View.VISIBLE
-        } else {
-            activityAddStoryBinding.progressBar.visibility = View.GONE
-        }
+        activityAddStoryBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {
