@@ -44,9 +44,11 @@ class RegisterActivity : AppCompatActivity() {
 
         val addMenu = menu.findItem(R.id.menu_add)
         val logoutMenu = menu.findItem(R.id.menu_logout)
+        val mapMenu = menu.findItem(R.id.menu_map)
 
         addMenu.isVisible = false
         logoutMenu.isVisible = false
+        mapMenu.isVisible = false
 
         return true
     }
@@ -56,7 +58,6 @@ class RegisterActivity : AppCompatActivity() {
             R.id.menu_language -> {
                 val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
                 startActivity(intent)
-                return true
             }
         }
         return true

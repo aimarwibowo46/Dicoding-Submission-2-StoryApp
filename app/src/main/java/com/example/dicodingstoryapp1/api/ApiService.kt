@@ -26,6 +26,12 @@ interface ApiService {
         @Header("Authorization") header: String
     ) : Call<StoriesResponse>
 
+    @GET("stories")
+    fun getStoriesWithLocation(
+        @Header("Authorization") header: String,
+        @Query("location") location: Int
+    ) : Call<StoriesResponse>
+
     @Multipart
     @POST("stories")
     fun uploadImage(

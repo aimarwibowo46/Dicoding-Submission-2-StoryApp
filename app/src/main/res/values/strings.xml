@@ -32,4 +32,7 @@
     <string name="switch_camera">Switch Camera</string>
     <string name="detail_photo">Detail Image</string>
     <string name="story_image">Story Image</string>
+    <string name="title_activity_story_maps">StoryMapsActivity</string>
+    <string name="google_maps">Google Maps</string>
+    <string name="story_uploaded_by">\"Story uploaded by \"</string>
 </resources>

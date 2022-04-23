@@ -83,7 +83,10 @@ class AddStoryActivity : AppCompatActivity() {
         inflater.inflate(R.menu.option_menu, menu)
 
         val addMenu = menu.findItem(R.id.menu_add)
+        val mapMenu = menu.findItem(R.id.menu_map)
+
         addMenu.isVisible = false
+        mapMenu.isVisible = false
 
         return true
     }

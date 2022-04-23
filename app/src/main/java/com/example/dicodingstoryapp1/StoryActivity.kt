@@ -59,23 +59,25 @@ class StoryActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
+            R.id.menu_map -> {
+                val intent = Intent(this, StoryMapsActivity::class.java)
+                startActivity(intent)
+            }
+
             R.id.menu_add -> {
                 val intent = Intent(this, AddStoryActivity::class.java)
                 startActivity(intent)
-                return true
             }
 
             R.id.menu_language -> {
                 val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
                 startActivity(intent)
-                return true
             }
 
             R.id.menu_logout -> {
                 storyViewModel.logout()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
-                return true
             }
         }
         return true
@@ -122,7 +124,9 @@ class StoryActivity : AppCompatActivity() {
             val story = Story(
                 item.name,
                 item.photoUrl,
-                item.description
+                item.description,
+                null,
+                null
             )
             listStories.add(story)
         }
