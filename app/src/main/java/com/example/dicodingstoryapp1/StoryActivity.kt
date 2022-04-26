@@ -5,30 +5,24 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dicodingstoryapp1.api.ApiConfig
-import com.example.dicodingstoryapp1.api.ListStoryItem
-import com.example.dicodingstoryapp1.api.StoriesResponse
 import com.example.dicodingstoryapp1.databinding.ActivityStoryBinding
-import com.example.dicodingstoryapp1.model.Story
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class StoryActivity : AppCompatActivity() {
 
-    private lateinit var storyViewModel: SharedViewModel
+    private lateinit var sharedViewModel: SharedViewModel
+    private val storyViewModel: StoryViewModel by viewModels {
+        StoryViewModel.ViewModelFactory(this)
+    }
     private lateinit var activityStoryBinding: ActivityStoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,13 +39,13 @@ class StoryActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        storyViewModel = ViewModelProvider(
+        sharedViewModel = ViewModelProvider(
             this,
             ViewModelFactory(UserPreference.getInstance(dataStore))
         )[SharedViewModel::class.java]
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.option_menu, menu)
         return true
@@ -75,7 +69,7 @@ class StoryActivity : AppCompatActivity() {
             }
 
             R.id.menu_logout -> {
-                storyViewModel.logout()
+                sharedViewModel.logout()
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
@@ -84,62 +78,18 @@ class StoryActivity : AppCompatActivity() {
     }
 
     private fun getStories() {
-        showLoading(true)
-
-        storyViewModel.getUser().observe(this ) {
-            if(it != null) {
-                val client = ApiConfig.getApiService().getStories("Bearer " + it.token)
-                client.enqueue(object: Callback<StoriesResponse> {
-                    override fun onResponse(
-                        call: Call<StoriesResponse>,
-                        response: Response<StoriesResponse>
-                    ) {
-                        showLoading(false)
-                        val responseBody = response.body()
-                        Log.d(TAG, "onResponse: $responseBody")
-                        if(response.isSuccessful && responseBody?.message == "Stories fetched successfully") {
-                            setStoriesData(responseBody.listStory)
-                            Toast.makeText(this@StoryActivity, getString(R.string.success_load_stories), Toast.LENGTH_SHORT).show()
-                        } else {
-                            Log.e(TAG, "onFailure1: ${response.message()}")
-                            Toast.makeText(this@StoryActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                        showLoading(false)
-                        Log.e(TAG, "onFailure2: ${t.message}")
-                        Toast.makeText(this@StoryActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()
-                    }
-
-                })
+        val adapter = StoryAdapter()
+        activityStoryBinding.rvStories.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                adapter.retry()
+            }
+        )
+        sharedViewModel.getUser().observe(this) { userAuth ->
+            if(userAuth != null) {
+                storyViewModel.stories("Bearer " + userAuth.token).observe(this) { stories ->
+                    adapter.submitData(lifecycle, stories)
+                }
             }
         }
-
-    }
-
-    private fun setStoriesData(items: List<ListStoryItem>) {
-        val listStories = ArrayList<Story>()
-        for(item in items) {
-            val story = Story(
-                item.name,
-                item.photoUrl,
-                item.description,
-                null,
-                null
-            )
-            listStories.add(story)
-        }
-
-        val adapter = StoryAdapter(listStories)
-        activityStoryBinding.rvStories.adapter = adapter
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        activityStoryBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-
-    companion object {
-        private const val TAG = "Story Activity"
     }
 }
