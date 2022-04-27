@@ -142,14 +142,13 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         response: Response<StoriesResponse>
                     ) {
                         val responseBody = response.body()
-                        Log.d(TAG, "onResponse1: $responseBody")
                         if(response.isSuccessful && responseBody?.message == "Stories fetched successfully") {
                             _listStoriesLocation.value = responseBody.listStory
                         }
                     }
 
                     override fun onFailure(call: Call<StoriesResponse>, t: Throwable) {
-                        Log.e(TAG, "onFailure2: ${t.message}")
+                        Toast.makeText(this@StoryMapsActivity, getString(R.string.fail_load_stories), Toast.LENGTH_SHORT).show()
                     }
 
                 })
@@ -215,10 +214,7 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val jakarta = LatLng(-6.23, 106.76)
 
-        Log.d(TAG, "onMapReady1: ${_listStoriesLocation.value}")
         listStoriesLocation.observe(this) {
-            Log.d(TAG, "onMapReady2: ${listStoriesLocation.value}")
-            Log.d(TAG, "onMapReady3: ${listStoriesLocation.value?.indices}")
             for(i in listStoriesLocation.value?.indices!!) {
                 val location = LatLng(listStoriesLocation.value?.get(i)?.lat!!, listStoriesLocation.value?.get(i)?.lon!!)
                 mMap.addMarker(MarkerOptions().position(location).title(getString(R.string.story_uploaded_by) + listStoriesLocation.value?.get(i)?.name))

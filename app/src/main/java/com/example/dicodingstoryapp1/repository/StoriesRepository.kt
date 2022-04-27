@@ -13,7 +13,7 @@ class StoriesRepository(private val storiesDatabase: StoriesDatabase, private va
     fun getStoriesForPaging(header: String) : LiveData<PagingData<ListStoryItem>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 5
+                pageSize = 5,
             ),
             pagingSourceFactory = {
                 StoriesPagingSource(apiService, header)

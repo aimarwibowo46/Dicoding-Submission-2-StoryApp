@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -54,11 +53,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.menu_language -> {
-                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
-                startActivity(intent)
-            }
+        if(item.itemId == R.id.menu_language) {
+            val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+            startActivity(intent)
         }
         return true
     }
@@ -74,20 +71,17 @@ class RegisterActivity : AppCompatActivity() {
             ) {
                 showLoading(false)
                 val responseBody = response.body()
-                Log.d(TAG, "onResponse: $responseBody")
                 if(response.isSuccessful && responseBody?.message == "User created") {
                     Toast.makeText(this@RegisterActivity, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@RegisterActivity, MainActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Log.e(TAG, "onFailure1: ${response.message()}")
                     Toast.makeText(this@RegisterActivity, getString(R.string.register_fail), Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
                 showLoading(false)
-                Log.e(TAG, "onFailure2: ${t.message}")
                 Toast.makeText(this@RegisterActivity, getString(R.string.register_fail), Toast.LENGTH_SHORT).show()
             }
 
@@ -96,10 +90,6 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         activityRegisterBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-
-    companion object {
-        private const val TAG = "Register Activity"
     }
 
 }

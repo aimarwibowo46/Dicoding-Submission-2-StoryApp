@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -80,11 +79,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.menu_language -> {
-                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
-                startActivity(intent)
-            }
+        if(item.itemId == R.id.menu_language) {
+            val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+            startActivity(intent)
         }
         return true
     }
@@ -97,21 +94,18 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 showLoading(false)
                 val responseBody = response.body()
-                Log.d(TAG, "onResponse: $responseBody")
                 if(response.isSuccessful && responseBody?.message == "success") {
                     mainViewModel.saveUser(UserAuth(responseBody.loginResult.token, true))
                     Toast.makeText(this@MainActivity, getString(R.string.login_success), Toast.LENGTH_SHORT).show()
                     val intent = Intent(this@MainActivity, StoryActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Log.e(TAG, "onFailure1: ${response.message()}")
                     Toast.makeText(this@MainActivity, getString(R.string.login_fail), Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 showLoading(false)
-                Log.e(TAG, "onFailure2: ${t.message}")
                 Toast.makeText(this@MainActivity, getString(R.string.login_fail), Toast.LENGTH_SHORT).show()
             }
 
@@ -120,9 +114,5 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         activityMainBinding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-    }
-
-    companion object {
-        private const val TAG = "Main Activity"
     }
 }

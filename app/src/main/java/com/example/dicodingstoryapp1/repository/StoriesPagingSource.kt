@@ -16,13 +16,13 @@ class StoriesPagingSource(private val apiService: ApiService, private val header
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ListStoryItem> {
         return try {
-            val position = params.key ?: INITIAL_PAGE_INDEX
-            val responseData = apiService.getStoriesForPaging(header, 20)
+            val page = params.key ?: INITIAL_PAGE_INDEX
+            val responseData = apiService.getStories(header, page, params.loadSize)
 
             LoadResult.Page(
                 data = responseData.listStory,
-                prevKey = if(position == INITIAL_PAGE_INDEX) null else position - 1,
-                nextKey = if(responseData.listStory.isNullOrEmpty()) null else position + 1
+                prevKey = if(page == INITIAL_PAGE_INDEX) null else page - 1,
+                nextKey = if(responseData.listStory.isNullOrEmpty()) null else page + 1
             )
         } catch(exception: Exception) {
             return LoadResult.Error(exception)

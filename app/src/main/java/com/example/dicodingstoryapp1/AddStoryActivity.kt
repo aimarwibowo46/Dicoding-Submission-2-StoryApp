@@ -10,7 +10,6 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -75,7 +74,7 @@ class AddStoryActivity : AppCompatActivity() {
         }
 
         activityAddStoryBinding.btnUpload.setOnClickListener {
-            uploadImage(lat, lon)
+            upload(lat, lon)
         }
     }
 
@@ -146,7 +145,7 @@ class AddStoryActivity : AppCompatActivity() {
         launcherIntentGallery.launch(chooser)
     }
 
-    private fun uploadImage(lat: Float, lon: Float) {
+    private fun upload(lat: Float, lon: Float) {
         showLoading(true)
 
         if (getFile != null) {
@@ -162,61 +161,34 @@ class AddStoryActivity : AppCompatActivity() {
 
             addStoryViewModel.getUser().observe(this) {
                 if(it != null) {
-                    if(lat != 1000f && lon != 1000f) {
-                        val client = ApiConfig.getApiService().uploadImageWithLocation("Bearer " + it.token, imageMultipart, description, lat, lon)
-                        client.enqueue(object: Callback<FileUploadResponse> {
-                            override fun onResponse(
-                                call: Call<FileUploadResponse>,
-                                response: Response<FileUploadResponse>
-                            ) {
-                                showLoading(false)
-                                val responseBody = response.body()
-                                Log.d(TAG, "onResponse: $responseBody")
-                                if(response.isSuccessful && responseBody?.message == "Story created successfully") {
-                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
-                                    startActivity(intent)
-                                } else {
-                                    Log.e(TAG, "onFailure1: ${response.message()}")
-                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                                showLoading(false)
-                                Log.e(TAG, "onFailure2: ${t.message}" )
-                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
-                            }
-                        })
+                    val client = if(lat != 1000f && lon != 1000f) {
+                        ApiConfig.getApiService().uploadStoriesWithLocation("Bearer " + it.token, imageMultipart, description, lat, lon)
+                    } else {
+                        ApiConfig.getApiService().uploadStories("Bearer " + it.token, imageMultipart, description)
                     }
 
-                    else {
-                        val client = ApiConfig.getApiService().uploadImage("Bearer " + it.token, imageMultipart, description)
-                        client.enqueue(object: Callback<FileUploadResponse> {
-                            override fun onResponse(
-                                call: Call<FileUploadResponse>,
-                                response: Response<FileUploadResponse>
-                            ) {
-                                showLoading(false)
-                                val responseBody = response.body()
-                                Log.d(TAG, "onResponse: $responseBody")
-                                if(response.isSuccessful && responseBody?.message == "Story created successfully") {
-                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
-                                    startActivity(intent)
-                                } else {
-                                    Log.e(TAG, "onFailure1: ${response.message()}")
-                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                                showLoading(false)
-                                Log.e(TAG, "onFailure2: ${t.message}" )
+                    client.enqueue(object: Callback<FileUploadResponse> {
+                        override fun onResponse(
+                            call: Call<FileUploadResponse>,
+                            response: Response<FileUploadResponse>
+                        ) {
+                            showLoading(false)
+                            val responseBody = response.body()
+                            if(response.isSuccessful && responseBody?.message == "Story created successfully") {
+                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
+                                startActivity(intent)
+                            } else {
                                 Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
                             }
-                        })
-                    }
+                        }
+
+                        override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
+                            showLoading(false)
+                            Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
+                        }
+                    })
+
                 }
             }
 
@@ -257,7 +229,6 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val TAG = "AddStoryActivity"
         const val CAMERA_X_RESULT = 200
 
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)

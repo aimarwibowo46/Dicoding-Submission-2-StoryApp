@@ -22,13 +22,9 @@ interface ApiService {
     ) : Call<LoginResponse>
 
     @GET("stories")
-    fun getStories(
-        @Header("Authorization") header: String
-    ) : Call<StoriesResponse>
-
-    @GET("stories")
-    suspend fun getStoriesForPaging(
+    suspend fun getStories(
         @Header("Authorization") header: String,
+        @Query("page") page: Int,
         @Query("size") size: Int
     ) : StoriesResponse
 
@@ -40,7 +36,7 @@ interface ApiService {
 
     @Multipart
     @POST("stories")
-    fun uploadImage(
+    fun uploadStories(
         @Header("Authorization") header: String,
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
@@ -48,7 +44,7 @@ interface ApiService {
 
     @Multipart
     @POST("stories")
-    fun uploadImageWithLocation(
+    fun uploadStoriesWithLocation(
         @Header("Authorization") header: String,
         @Part file: MultipartBody.Part,
         @Part("description") description: RequestBody,
