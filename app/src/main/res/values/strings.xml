@@ -36,4 +36,8 @@
     <string name="google_maps">Google Maps</string>
     <string name="story_uploaded_by">\"Story uploaded by \"</string>
     <string name="retry">Try again</string>
+    <string name="location_not_found">Your location is not found. Try Again</string>
+    <string name="your_location">Your Location</string>
+    <string name="location">Location :</string>
+    <string name="empty_location">-</string>
 </resources>

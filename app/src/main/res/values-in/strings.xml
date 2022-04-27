@@ -36,4 +36,7 @@
     <string name="google_maps">Google Maps</string>
     <string name="story_uploaded_by">\"Story diupload oleh \"</string>
     <string name="retry">Coba lagi</string>
+    <string name="location_not_found">Lokasi anda tidak ditemukan. Coba lagi</string>
+    <string name="your_location">Lokasi Anda</string>
+    <string name="location">Lokasi :</string>
 </resources>

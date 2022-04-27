@@ -48,6 +48,14 @@ class AddStoryActivity : AppCompatActivity() {
         activityAddStoryBinding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(activityAddStoryBinding.root)
 
+        val lat = intent.getFloatExtra(LAT, 1000f)
+        val lon = intent.getFloatExtra(LON, 1000f)
+
+        if(lat != 1000f && lon != 1000f) {
+            val location = "Latitude = $lat, \nLongitude = $lon"
+            activityAddStoryBinding.tvLocationValue.text = location
+        }
+
         setupViewModel()
 
         if (!allPermissionsGranted()) {
@@ -67,7 +75,7 @@ class AddStoryActivity : AppCompatActivity() {
         }
 
         activityAddStoryBinding.btnUpload.setOnClickListener {
-            uploadImage()
+            uploadImage(lat, lon)
         }
     }
 
@@ -138,7 +146,7 @@ class AddStoryActivity : AppCompatActivity() {
         launcherIntentGallery.launch(chooser)
     }
 
-    private fun uploadImage() {
+    private fun uploadImage(lat: Float, lon: Float) {
         showLoading(true)
 
         if (getFile != null) {
@@ -154,31 +162,61 @@ class AddStoryActivity : AppCompatActivity() {
 
             addStoryViewModel.getUser().observe(this) {
                 if(it != null) {
-                    val client = ApiConfig.getApiService().uploadImage("Bearer " + it.token, imageMultipart, description)
-                    client.enqueue(object: Callback<FileUploadResponse> {
-                        override fun onResponse(
-                            call: Call<FileUploadResponse>,
-                            response: Response<FileUploadResponse>
-                        ) {
-                            showLoading(false)
-                            val responseBody = response.body()
-                            Log.d(TAG, "onResponse: $responseBody")
-                            if(response.isSuccessful && responseBody?.message == "Story created successfully") {
-                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
-                                startActivity(intent)
-                            } else {
-                                Log.e(TAG, "onFailure1: ${response.message()}")
+                    if(lat != 1000f && lon != 1000f) {
+                        val client = ApiConfig.getApiService().uploadImageWithLocation("Bearer " + it.token, imageMultipart, description, lat, lon)
+                        client.enqueue(object: Callback<FileUploadResponse> {
+                            override fun onResponse(
+                                call: Call<FileUploadResponse>,
+                                response: Response<FileUploadResponse>
+                            ) {
+                                showLoading(false)
+                                val responseBody = response.body()
+                                Log.d(TAG, "onResponse: $responseBody")
+                                if(response.isSuccessful && responseBody?.message == "Story created successfully") {
+                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
+                                    startActivity(intent)
+                                } else {
+                                    Log.e(TAG, "onFailure1: ${response.message()}")
+                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
+                                showLoading(false)
+                                Log.e(TAG, "onFailure2: ${t.message}" )
                                 Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
                             }
-                        }
+                        })
+                    }
 
-                        override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
-                            showLoading(false)
-                            Log.e(TAG, "onFailure2: ${t.message}" )
-                            Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
-                        }
-                    })
+                    else {
+                        val client = ApiConfig.getApiService().uploadImage("Bearer " + it.token, imageMultipart, description)
+                        client.enqueue(object: Callback<FileUploadResponse> {
+                            override fun onResponse(
+                                call: Call<FileUploadResponse>,
+                                response: Response<FileUploadResponse>
+                            ) {
+                                showLoading(false)
+                                val responseBody = response.body()
+                                Log.d(TAG, "onResponse: $responseBody")
+                                if(response.isSuccessful && responseBody?.message == "Story created successfully") {
+                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_success), Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(this@AddStoryActivity, StoryActivity::class.java)
+                                    startActivity(intent)
+                                } else {
+                                    Log.e(TAG, "onFailure1: ${response.message()}")
+                                    Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<FileUploadResponse>, t: Throwable) {
+                                showLoading(false)
+                                Log.e(TAG, "onFailure2: ${t.message}" )
+                                Toast.makeText(this@AddStoryActivity, getString(R.string.upload_fail), Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
                 }
             }
 
@@ -224,5 +262,8 @@ class AddStoryActivity : AppCompatActivity() {
 
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
+
+        const val LAT = "lat"
+        const val LON = "lon"
     }
 }

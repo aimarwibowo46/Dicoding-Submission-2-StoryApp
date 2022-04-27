@@ -1,10 +1,20 @@
 package com.example.dicodingstoryapp1
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -21,6 +31,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.dicodingstoryapp1.databinding.ActivityStoryMapsBinding
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,6 +46,7 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var storyMapsViewModel: SharedViewModel
     private lateinit var mMap: GoogleMap
     private lateinit var activityStoryMapsBinding: ActivityStoryMapsBinding
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val _listStoriesLocation = MutableLiveData<List<ListStoryItem>>()
     private val listStoriesLocation: LiveData<List<ListStoryItem>> = _listStoriesLocation
@@ -51,6 +65,71 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    getMyLocation()
+                }
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    getMyLocation()
+                }
+                else -> {
+                }
+            }
+        }
+
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun getMyLocation() {
+        if(checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ){
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    mMap.isMyLocationEnabled = true
+                    showMyLocationMarker(location)
+                } else {
+                    Toast.makeText(
+                        this@StoryMapsActivity,
+                        getString(R.string.location_not_found),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun showMyLocationMarker(location: Location) {
+        LAT = location.latitude
+        LON = location.longitude
+
+        val startLocation = LatLng(LAT, LON)
+        mMap.addMarker(
+            MarkerOptions()
+                .position(startLocation)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                .draggable(true)
+                .title(getString(R.string.your_location))
+        )
     }
 
     private fun getStoriesLocation() {
@@ -85,6 +164,44 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )[SharedViewModel::class.java]
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.option_menu, menu)
+
+        val mapsMenu = menu.findItem(R.id.menu_map)
+        mapsMenu.isVisible = false
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.menu_map -> {
+                val intent = Intent(this, StoryMapsActivity::class.java)
+                startActivity(intent)
+            }
+
+            R.id.menu_add -> {
+                val intent = Intent(this, AddStoryActivity::class.java)
+                intent.putExtra(AddStoryActivity.LAT, LAT.toFloat())
+                intent.putExtra(AddStoryActivity.LON, LON.toFloat())
+                startActivity(intent)
+            }
+
+            R.id.menu_language -> {
+                val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                startActivity(intent)
+            }
+
+            R.id.menu_logout -> {
+                storyMapsViewModel.logout()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return true
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -94,6 +211,7 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isMapToolbarEnabled = true
 
         setMapStyle()
+        getMyLocation()
 
         val jakarta = LatLng(-6.23, 106.76)
 
@@ -104,8 +222,8 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             for(i in listStoriesLocation.value?.indices!!) {
                 val location = LatLng(listStoriesLocation.value?.get(i)?.lat!!, listStoriesLocation.value?.get(i)?.lon!!)
                 mMap.addMarker(MarkerOptions().position(location).title(getString(R.string.story_uploaded_by) + listStoriesLocation.value?.get(i)?.name))
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(jakarta, 2f))
             }
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(jakarta, 2f))
         }
     }
 
@@ -123,6 +241,8 @@ class StoryMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     companion object {
         const val TAG = "StoryMapsActivity"
+        var LAT = 0.0
+        var LON = 0.0
     }
 
 }
